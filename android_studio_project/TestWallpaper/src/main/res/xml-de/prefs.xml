@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="Common settings"
+        android:summary="summary">
+
+        <CheckBoxPreference
+            android:key="visit_0_visible"
+            android:title="Zeige Besuche-uns Symbol"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:dependency="visit_0_visible"
+            android:key="visit_0_enabled"
+            android:title="Besuche-uns Symbol aktiv"
+            android:summary="Eine Berührung des Haus-Symbols öffnet einen Link zu unserem Blog."
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="poster_calendar"
+            android:title="Kalender nutzen"
+            android:summary="Eine Berührung des Postern öffnet den Kalender."
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="settings_sun"
+            android:title="Wallpaper-Einstellungen nutzen"
+            android:summary="Eine Berührung der Sonne öffnet die Wallpaper-Einstellungen."
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="skyobject_clouds"
+            android:title="Clouds"
+            android:summary="Wolken am Himmel."
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:dependency="skyobject_clouds"
+            android:key="move_sky_objects"
+            android:title="Wind"
+            android:summary="Die Wolken im Hintergrung bewegen sich dann."
+            android:defaultValue="true"/>
+
+        <EditTextPreference
+            android:dependency="skyobject_clouds"
+            android:key="skyobject_clouds_count"
+            android:title="Anzahl der Wolken"
+            android:summary="Wähle eine Zahl zwischen 5 und 15."
+            android:inputType="number"
+            android:defaultValue="5"/>
+
+        <EditTextPreference
+            android:dependency="skyobject_clouds"
+            android:key="skyobject_clouds_speed"
+            android:title="Geschwindigkeit der WOlken"
+            android:summary="Wähle eine Zahl zwischen 1 und 10."
+            android:inputType="number"
+            android:defaultValue="5"/>
+
+        <CheckBoxPreference
+            android:key="character_a_tappable"
+            android:title="Sicherer Stand bei Berührung"
+            android:summary="Der Charakter wird bei Berührung in einen sicheren Stand wechseln um nicht hinzufallen."
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="inclination"
+            android:title="Neigung"
+            android:summary="Nutzt den Lagesensor des Geräts um den Charakter schlittern zu lassen."
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="parallax"
+            android:title="Parallax"
+            android:summary="Schaltet den Parallaxe-Effekt an."
+            android:defaultValue="false"/>
+
+        <CheckBoxPreference
+            android:key="counter"
+            android:title="Distanzzähler"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:dependency="counter"
+            android:key="switch_yd"
+            android:title="Yards"
+            android:summary="Zeigt Yards statt Metern an."
+            android:defaultValue="false"/>
+
+        <CheckBoxPreference
+            android:key="particle_p"
+            android:title="Partikel"
+            android:defaultValue="true"/>
+
+        <EditTextPreference
+            android:dependency="particle_p"
+            android:key="particle_p_count"
+            android:title="Partikeldichte"
+            android:summary="Ein Wert zwischen 10 und 50."
+            android:inputType="number"
+            android:defaultValue="25"/>
+
+        <EditTextPreference
+            android:dependency="particle_p"
+            android:key="particle_p_speed"
+            android:title="Partikelgeschwindigkeit"
+            android:summary="Ein Wert zwischen 1 und 10."
+            android:inputType="number"
+            android:defaultValue="5"/>
+
+        <EditTextPreference
+            android:key="number_of_screens"
+            android:title="Anzahl der Screens"
+            android:summary="Anzahl der horizontal ausgerichteten Screens welche vom Launcher genutzt werden."
+            android:inputType="number"
+            android:defaultValue="5"/>
+
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">PuvoWallpaperBase</string>
+    <string name="SetWallpaperHeading">How to enable the wallpaper?</string>
+    <string name="buttonSetWallpaperText">Set Wallpaper</string>
+    <string name="buttonCloseText">Close</string>
+	<string name="textViewExplanation">
+		<![CDATA[
+		<big>You have three ways how to set the wallpaper</big><br>
+		<p>
+		Use the ”Set Wallpaper” button below.
+		</p>
+		or
+		<p>
+		Standard Method:<br>
+		1. On any home-screen, place a finger on the display and long press.<br>
+		2. From the menu that pops up, select ”Wallpapers.” (on Android 2.*)<br>
+		3. From here, select ”Live Wallpapers” to see the list of installed live wallpapers.<br>
+		4. You can select each one to see a preview of how it will look like on your device.<br>
+		5. If you like what you see, hit ”Set Wallpaper.”<br>
+		</p>
+		or
+		<p>
+		Alternative Method:<br>
+		1. First, head into the Settings menu of your device.<br>
+		2. From there, select “Display.”<br>
+		3. Under Display, you will see an option for “Wallpaper.” Select it.<br>
+		4. From there, follow Steps 3 to 5 on the Standard Method.<br>
+		</p>
+		]]>
+</string>
+
+</resources>

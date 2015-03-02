@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="Common settings"
+        android:summary="summary">
+
+        <CheckBoxPreference
+            android:key="visit_0_visible"
+            android:title="Show visit-us icon"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:dependency="visit_0_visible"
+            android:key="visit_0_enabled"
+            android:title="Enable visit-us icon"
+            android:summary="Tapping the house icon will open a link to our blog."
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="poster_calendar"
+            android:title="Use Calendar"
+            android:summary="Tapping the poster will open the calendar."
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="settings_sun"
+            android:title="Use wallpaper settings"
+            android:summary="Tapping the sun will open the wallpaper settings."
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="skyobject_clouds"
+            android:title="Clouds"
+            android:summary="Clouds in the sky"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:dependency="skyobject_clouds"
+            android:key="move_sky_objects"
+            android:title="Wind"
+            android:summary="Clouds in the background will move."
+            android:defaultValue="true"/>
+
+        <EditTextPreference
+            android:dependency="skyobject_clouds"
+            android:key="skyobject_clouds_count"
+            android:title="Number of Clouds"
+            android:summary="Chose a number between 5 and 15."
+            android:inputType="number"
+            android:defaultValue="5"/>
+
+        <EditTextPreference
+            android:dependency="skyobject_clouds"
+            android:key="skyobject_clouds_speed"
+            android:title="Set the speed of the clouds"
+            android:summary="A number between 1 and 10."
+            android:inputType="number"
+            android:defaultValue="5"/>
+
+        <CheckBoxPreference
+            android:key="character_a_tappable"
+            android:title="Safe stance"
+            android:summary="The character will go into a safe stance to not fall."
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="inclination"
+            android:title="Inclination"
+            android:summary="Use inclination sensor of the device to move the character."
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="parallax"
+            android:title="Parallax"
+            android:summary="Switches parallax effect on/off."
+            android:defaultValue="false"/>
+
+        <CheckBoxPreference
+            android:key="counter"
+            android:title="Count the distance"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:dependency="counter"
+            android:key="switch_yd"
+            android:title="Yards"
+            android:summary="Shows yards instead of meters."
+            android:defaultValue="false"/>
+
+        <CheckBoxPreference
+            android:key="particle_p"
+            android:title="Particles"
+            android:defaultValue="true"/>
+
+        <EditTextPreference
+            android:dependency="particle_p"
+            android:key="particle_p_count"
+            android:title="Particle density"
+            android:summary="A number between 10 and 50."
+            android:inputType="number"
+            android:defaultValue="25"/>
+
+        <EditTextPreference
+            android:dependency="particle_p"
+            android:key="particle_p_speed"
+            android:title="Particle speed"
+            android:summary="A number between 1 and 10."
+            android:inputType="number"
+            android:defaultValue="5"/>
+
+        <EditTextPreference
+            android:key="number_of_screens"
+            android:title="Number of used screens"
+            android:summary="Number of horizontally aligned screens used by the launcher."
+            android:inputType="number"
+            android:defaultValue="5"/>
+
+    </PreferenceCategory>
+</PreferenceScreen>

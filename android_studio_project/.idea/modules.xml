@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/PuvoWallpaperBase/PuvoWallpaperBase.iml" filepath="$PROJECT_DIR$/PuvoWallpaperBase/PuvoWallpaperBase.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TestWallpaper/TestWallpaper.iml" filepath="$PROJECT_DIR$/TestWallpaper/TestWallpaper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android_studio_project.iml" filepath="$PROJECT_DIR$/android_studio_project.iml" />
+    </modules>
+  </component>
+</project>
+

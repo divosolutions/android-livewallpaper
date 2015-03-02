@@ -1,0 +1,53 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.puvo.livewallpapers.testwallpaper">
+
+    <uses-feature android:name="android.software.live_wallpaper" />
+
+    <application
+        android:icon="@drawable/logo"
+        android:label="@string/app_name" android:allowBackup="true" android:logo="@drawable/logo" android:thumbnail="@drawable/logo">
+        <service
+            android:name=".PuvoWallpaperService"
+            android:icon="@drawable/logo"
+            android:logo="@drawable/logo"
+            android:thumbnail="@drawable/logo"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_WALLPAPER" >
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/puvo" />
+        </service>
+        <activity
+            android:name="com.puvo.livewallpapers.testwallpaper.PuvoPreferences"
+            android:exported="true"
+            android:theme="@android:style/Theme.WallpaperSettings"
+            android:launchMode="singleTask"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.puvo.livewallpapers.puvowallpaperbase.PuvoPreferences"
+            android:exported="true"
+            android:theme="@android:style/Theme.WallpaperSettings"
+            android:launchMode="singleTask"
+            android:label="@string/app_name" >
+        </activity>
+	    <activity
+		    android:name=".SetWallpaper"
+		    android:label="@string/app_name"
+		    android:icon="@drawable/logo"
+		    android:logo="@drawable/logo">
+		    <intent-filter>
+			    <action android:name="android.intent.action.MAIN"/>
+			    <category android:name="android.intent.category.LAUNCHER"/>
+		    </intent-filter>
+	    </activity>
+
+    </application>
+
+</manifest>

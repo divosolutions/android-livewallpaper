@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<integer name="skyobject_clouds_min_particle_count" translatable="false">5</integer>
+	<integer name="skyobject_clouds_max_particle_count" translatable="false">15</integer>
+	<integer name="min_particle_count" translatable="false">10</integer>
+	<integer name="max_particle_count" translatable="false">50</integer>
+
+	<integer name="min_particle_speed" translatable="false">1</integer>
+	<integer name="max_particle_speed" translatable="false">10</integer>
+	<string-array name="visit_url" translatable="false">
+		<item>http://www.puvoproductions.com</item>
+	</string-array>
+	<string name="extra_prefs_file" translatable="false">extra_prefs</string>
+</resources>

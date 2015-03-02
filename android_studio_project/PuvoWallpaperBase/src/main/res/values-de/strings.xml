@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="SetWallpaperHeading">Wie aktiviere ich das Wallpaper?</string>
+    <string name="buttonSetWallpaperText">Hintergrund festlegen</string>
+    <string name="buttonCloseText">Schließen</string>
+    <string name="textViewExplanation">
+	    <![CDATA[
+		<big>Du hast drei Möglichkeiten das Wallpaper zu aktivieren</big><br>
+		<p>
+		Benutze die Schaltfläche ”Hintergrund festlegen” am unteren Bildschirmrand.
+		</p>
+		oder
+		<p>
+		Standard Methode:<br>
+		1. Berühre für 1-2 Sekunden eine freie Stelle auf deinem aktuellen Hintergrund, bis sich ein Menü öffnet.<br>
+		2. Wähle den Menüpunkt ”Hintergründe.” (on Android 2.*)<br>
+		3. Wähle dann den Menüpunkt ”Live-Hintergründe” um die Liste der installierten Live-Hintergründe anzuzeigen.<br>
+		4. Wähle einen Live-Hintergrund aus der Liste aus, um die Vorschauversion anzusehen.<br>
+		5. Um den Hintergrund zu aktivieren, wähle ”Hintergrund festlegen”.<br>
+		</p>
+		oder
+		<p>
+		Alternative Methode:<br>
+		1. Öffne das Menü "Einstellungen" deines Smartphones oder Tablets.<br>
+		2. Wähle im Menüpunkt “Gerät“ den Eintrag “Display.”<br>
+		3. In den Display-Einstellungen wählst du den Eintrag “Hintergrund”.<br>
+		4. Von hier aus folge einfach den Schritten 3 bis 5 der Standard Methode.<br>
+		</p>
+		]]>
+	</string>
+</resources>

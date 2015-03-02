@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer name="background_width" translatable="false">1980</integer>
+    <integer name="background_height" translatable="false">1000</integer>
+    <integer-array name="cloud_area" translatable="false">
+        <item>0</item>
+        <item>300</item>
+    </integer-array>
+    <string-array name="virtual_scroll_speed_factor" translatable="false">
+        <item>1.0</item>
+        <item>1.15</item>
+        <item>1.235</item>
+        <item>1.471</item>
+    </string-array>
+    <string name="scroll_response" translatable="false">0.55</string>
+    <integer name="parallax" translatable="false">40</integer>
+    <string-array name="connections" translatable="false">
+        <item>none</item>
+        <item>none</item>
+        <item>none</item>
+        <item>none</item>
+        <item>none</item>
+        <item>none</item>
+        <item>none</item>
+        <item>13</item>
+        <item>none</item>
+        <item>none</item>
+        <item>none</item>
+        <item>none</item>
+        <item>none</item>
+        <item>14</item>
+        <item>15 18</item>
+        <item>16</item>
+        <item>none</item>
+        <item>none</item>
+        <item>none</item>
+    </string-array>
+</resources>
