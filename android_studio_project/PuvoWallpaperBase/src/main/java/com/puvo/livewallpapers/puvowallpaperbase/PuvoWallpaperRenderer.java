@@ -138,10 +138,12 @@ public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRend
 		ArrayList<Hashtable<String, ArrayList<Integer>>> tmpVec = new ArrayList<>(number_of_layers);
 		Hashtable<String, ArrayList<Integer>> byName;
 
+		// a hashtable for every layer
 		for (int l = 0; l < number_of_layers; l++) {
 			tmpVec.add(l, new Hashtable<String, ArrayList<Integer>>());
 		}
 
+		// add the resources to the sprite number
 		for (int res : resourceData.keySet()) {
 			String number = resourceData.get(res).get("number");
 			byName = tmpVec.get(Integer.parseInt(resourceData.get(res).get("layer")));
