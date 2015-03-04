@@ -50,10 +50,7 @@ public abstract class PuvoGLWallpaperService extends WallpaperService
 			super.onCreate(surfaceHolder);
 			puvoGLSurfaceView = new PuvoGLSurfaceView(PuvoGLWallpaperService.this);
 
-			// I have no idea how to get GLES version 2 to work. Every time I set the version to 2
-			// I get 'libEGL﹕ called unimplemented OpenGL ES API' warnings and nothing will be shown.
-			// Fortunately we only need the 'classic' render pipeline.
-			setEGLContextClientVersion(1);
+			setEGLContextClientVersion(2);
 
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				setPreserveEGLContextOnPause(true);
