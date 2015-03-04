@@ -16,11 +16,11 @@ This engine uses the names of the images/sprites in the resources to get informa
 * where to place the sprite on the screen (position, layer and number in layer)
 * the number of frames (if it is a sprite sheet) and the frames per second rate
 
-A full description can be found in [Defines.java] (https://github.com/xaero-exil/android-livewallpaper/blob/master/android_studio_project/PuvoWallpaperBase/src/main/java/com/puvo/livewallpapers/puvowallpaperbase/Defines.java)
+A full description can be found in [Defines.java] (https://github.com/divosolutions/android-livewallpaper/blob/master/android_studio_project/PuvoWallpaperBase/src/main/java/com/puvo/livewallpapers/puvowallpaperbase/Defines.java)
 above the `getAllResourceData` function.
 
 As long as a sprite is not marked as special, it will create a
-[BaseObject] (https://github.com/xaero-exil/android-livewallpaper/blob/master/android_studio_project/PuvoWallpaperBase/src/main/java/com/puvo/livewallpapers/puvowallpaperbase/BaseObject.java)
+[BaseObject] (https://github.com/divosolutions/android-livewallpaper/blob/master/android_studio_project/PuvoWallpaperBase/src/main/java/com/puvo/livewallpapers/puvowallpaperbase/BaseObject.java)
 at the specified position/layer/order. Otherwise a special object (e.g. Particle) derived from BaseObject will be
 created.
 
@@ -41,7 +41,7 @@ with the id 4 and has 14 frames which are running with 20 fps. The left border i
 
 Sometimes a sprite sheet can get very large (especially in the x dimension) and android will get an `OutOfMemoryError`
 because of that. For this case you can use the other way, like it is done in the 
-[TestWallpaper] (https://github.com/xaero-exil/android-livewallpaper/tree/master/android_studio_project/TestWallpaper/src/main/res/drawable-nodpi).
+[TestWallpaper] (https://github.com/divosolutions/android-livewallpaper/tree/master/android_studio_project/TestWallpaper/src/main/res/drawable-nodpi).
 The first sprite's name will hold all the relevant information and the other sprites only offer the frame number:
 
 * r2__2__character_a__7__1__1__1__900__200__m496__2000.png: frame 1, layer 2, number 2, id 7, special, 1 fps, (x=900, y=200), -496 <-> 2000
@@ -57,7 +57,7 @@ are 0.
 
 ### preferences
 Some of the preferences depend on the name of a sprite. I will not (for now) explain everything. Instead I will explain
-it for the [Visit] (https://github.com/xaero-exil/android-livewallpaper/blob/master/android_studio_project/PuvoWallpaperBase/src/main/java/com/puvo/livewallpapers/puvowallpaperbase/Visit.java)
+it for the [Visit] (https://github.com/divosolutions/android-livewallpaper/blob/master/android_studio_project/PuvoWallpaperBase/src/main/java/com/puvo/livewallpapers/puvowallpaperbase/Visit.java)
 object. Imagine you want a sprite in your wallpaper which will call a link to a specified URL, then you have to do the 
 following
 
