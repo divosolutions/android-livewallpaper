@@ -1,22 +1,33 @@
-/*
-* Author:
-*   xaero xaero@exil.org
-*
-* Copyright (c) 2014, Puvo Productions http://puvoproductions.com/
-*
-* Permission to use, copy, modify, and distribute this software for any
-* purpose with or without fee is hereby granted, provided that the above
-* copyright notice and this permission notice appear in all copies.
-*
-* THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-* WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-* MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-* ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-* WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-* ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-* OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-*/
-
+// Author:
+//   Thomas Siegmund Thomas.Siegmund@puvoproductions.com
+//
+// Copyright (c) 2015, Puvo Productions http://puvoproductions.com
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without modification,
+// are permitted provided that the following conditions are met:
+//
+//    * Redistributions of source code must retain the above copyright notice, this
+//      list of conditions and the following disclaimer.
+//    * Redistributions in binary form must reproduce the above copyright notice,
+//      this list of conditions and the following disclaimer in the documentation
+//      and/or other materials provided with the distribution.
+//    * Neither the name of the [ORGANIZATION] nor the names of its contributors
+//      may be used to endorse or promote products derived from this software
+//      without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+// LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.puvo.livewallpapers.puvowallpaperbase;
 
@@ -43,8 +54,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
 
-public class PuvoWallpaperService extends PuvoGLWallpaperService
-{
+public class PuvoWallpaperService extends PuvoGLWallpaperService {
 	private final static String LOG_TAG = "PuvoWallpaperService";
 	protected PuvoWallpaperRenderer puvoWallpaperRenderer = null;
 
@@ -62,8 +72,7 @@ public class PuvoWallpaperService extends PuvoGLWallpaperService
 	}
 
 	public class PuvoWallpaperEngine extends PuvoGLEngine
-			implements SensorEventListener, SharedPreferences.OnSharedPreferenceChangeListener
-	{
+		implements SensorEventListener, SharedPreferences.OnSharedPreferenceChangeListener {
 		private final float PARALLAX_FACTOR_P = 1f / 20f;
 		private final float PARALLAX_FACTOR_N = -1f / 20f;
 		private final PuvoWallpaperRenderer puvoWallpaperRenderer;
@@ -75,6 +84,10 @@ public class PuvoWallpaperService extends PuvoGLWallpaperService
 		private boolean isLandscape, isVisible, isUpside_down;
 		private int get_rotation_counter = 0;
 		private SavePreferencesCountdownTimer preferencesCountdown;
+		private DisplayMetrics tmp_metrics = new DisplayMetrics();
+		private WindowManager windowManager;
+		private Display display;
+
 
 		public PuvoWallpaperEngine(PuvoWallpaperRenderer puvoWallpaperRenderer)
 		{
@@ -87,6 +100,10 @@ public class PuvoWallpaperService extends PuvoGLWallpaperService
 			this.puvoWallpaperRenderer = puvoWallpaperRenderer;
 			this.puvoWallpaperRenderer.setContext(context);
 			puvoGestureDetector = new PuvoGestureDetector(PuvoWallpaperService.this, puvoWallpaperRenderer);
+			windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+			display = windowManager.getDefaultDisplay();
+
+
 			init();
 		}
 
@@ -197,10 +214,11 @@ public class PuvoWallpaperService extends PuvoGLWallpaperService
 					sensorCountdown = null;
 				}
 
-				sensorCountdown = new CountDownTimer(1000, 1000)
-				{
+				sensorCountdown = new CountDownTimer(1000, 1000) {
 					@Override
-					public void onTick(long millisUntilFinished) { }
+					public void onTick(long millisUntilFinished)
+					{
+					}
 
 					@Override
 					public void onFinish()
@@ -216,7 +234,7 @@ public class PuvoWallpaperService extends PuvoGLWallpaperService
 
 		@Override
 		public void onOffsetsChanged(final float xOffset, final float yOffset, final float xOffsetStep,
-		                             final float yOffsetStep, final int xPixelOffset, final int yPixelOffset)
+									 final float yOffsetStep, final int xPixelOffset, final int yPixelOffset)
 		{
 			super.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
 			if (isVisible) {
@@ -234,7 +252,7 @@ public class PuvoWallpaperService extends PuvoGLWallpaperService
 
 		@Override
 		public Bundle onCommand(String action, int x, int y, int z,
-		                        Bundle extras, boolean resultRequested)
+								Bundle extras, boolean resultRequested)
 		{
 			if (action.equals(WallpaperManager.COMMAND_TAP)) {
 				puvoWallpaperRenderer.triggerAction(x, y);
@@ -256,13 +274,12 @@ public class PuvoWallpaperService extends PuvoGLWallpaperService
 		{
 			isLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
 
-			DisplayMetrics metrics = new DisplayMetrics();
-			((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
+			display.getMetrics(tmp_metrics);
 
 			if (isLandscape) {
-				puvoWallpaperRenderer.setMetrics(1f / metrics.xdpi);
+				puvoWallpaperRenderer.setMetrics(1f / tmp_metrics.xdpi);
 			} else {
-				puvoWallpaperRenderer.setMetrics(1f / metrics.ydpi);
+				puvoWallpaperRenderer.setMetrics(1f / tmp_metrics.ydpi);
 			}
 		}
 
@@ -280,11 +297,11 @@ public class PuvoWallpaperService extends PuvoGLWallpaperService
 		public void onSensorChanged(SensorEvent event)
 		{
 			if (get_rotation_counter == 0) {
-				Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+				if (display.getRotation() > Surface.ROTATION_90 != isUpside_down) {
+					isUpside_down = display.getRotation() > Surface.ROTATION_90;
 
-				isUpside_down = display.getRotation() > Surface.ROTATION_90;
-
-				_onSurfaceChanged();
+					_onSurfaceChanged();
+				}
 				get_rotation_counter = 100;
 			}
 			get_rotation_counter--;
@@ -371,15 +388,16 @@ public class PuvoWallpaperService extends PuvoGLWallpaperService
 			}
 		}
 
-		class SavePreferencesCountdownTimer extends CountDownTimer
-		{
+		class SavePreferencesCountdownTimer extends CountDownTimer {
 			SavePreferencesCountdownTimer(long startTime, long interval)
 			{
 				super(startTime, interval);
 			}
 
 			@Override
-			public void onTick(long millisUntilFinished) { }
+			public void onTick(long millisUntilFinished)
+			{
+			}
 
 			@Override
 			public void onFinish()

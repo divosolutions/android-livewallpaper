@@ -36,19 +36,17 @@ import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.CountDownTimer;
+import android.util.Log;
 
 import java.util.ArrayList;
-
-import javax.microedition.khronos.opengles.GL10;
+import java.util.Hashtable;
 
 @SuppressWarnings({"SameParameterValue", "CanBeFinal", "WeakerAccess"})
-public class BaseObject implements BaseObjectInterface
-{
+public class BaseObject implements BaseObjectInterface {
 	private static final String LOG_TAG = "BaseObject";
 
 	// trigger commands
-	protected enum Command
-	{
+	protected enum Command {
 		NONE,
 		OPACITY_CHANGE,
 		MOVE,
@@ -79,20 +77,35 @@ public class BaseObject implements BaseObjectInterface
 	protected boolean draw, move_it;
 	protected final PointF zeroPoint = new PointF(0f, 0f);
 
-	public BaseObject(GL10 gl, final Context context, final int[] res, final int left_border, final int right_border,
+	public BaseObject(final Context context, final int[] res, final int left_border, final int right_border,
 					  final float virtual_scroll_speed_factor)
 	{
 		this.context = context;
-		fullName = Defines.getResourceData().get(res[0]).get("fullName");
+		Hashtable<Integer, Hashtable<String, String>> resourceData = Defines.getResourceData();
+
+		if (resourceData == null) {
+			Log.e(LOG_TAG, "resourceData is null");
+			fullName = "no resourceData";
+			this.left_border = this.right_border = 0;
+			objectSprite = null;
+			original_position = new PointF();
+			position = new PointF();
+			lastTouch = new Point();
+			draw_width = draw_height = 0f;
+			listener = new ArrayList<>();
+			return;
+		}
 
 
-		final int fps = Integer.parseInt(Defines.getResourceData().get(res[0]).get("fps"));
-		original_position = new PointF(Float.parseFloat(Defines.getResourceData().get(res[0]).get("posX")), Float.parseFloat(Defines.getResourceData().get(res[0]).get("posY")));
+		fullName = resourceData.get(res[0]).get("fullName");
+
+		final int fps = Integer.parseInt(resourceData.get(res[0]).get("fps"));
+		original_position = new PointF(Float.parseFloat(resourceData.get(res[0]).get("posX")), Float.parseFloat(resourceData.get(res[0]).get("posY")));
 		position = new PointF();
 		position.set(original_position);
 		lastTouch = new Point();
 
-		objectSprite = new ObjectSprite(gl, res, fps, context);
+		objectSprite = new ObjectSprite(res, fps, context);
 
 		this.left_border = (int) (left_border * virtual_scroll_speed_factor);
 		this.right_border = (int) (right_border * virtual_scroll_speed_factor);
@@ -162,7 +175,7 @@ public class BaseObject implements BaseObjectInterface
 
 	public boolean triggerAction()
 	{
-		final int value = ((0xFFFF & (int) (position.x + draw_width / 2f)) << 16) | (0xFFFF & (int)(position.y + draw_height / 2f));
+		final int value = ((0xFFFF & (int) (position.x + draw_width / 2f)) << 16) | (0xFFFF & (int) (position.y + draw_height / 2f));
 		sendCommand(Command.MOVE, value);
 		return false;
 	}
@@ -207,20 +220,19 @@ public class BaseObject implements BaseObjectInterface
 	{
 	}
 
-	public void onDrawFrame(GL10 gl, final long now, PointF baseTranslation, final float ratio, final PointF scale)
+	public void onDrawFrame(final long now, PointF baseTranslation, final float ratio, final PointF scale)
 	{
-		if (draw && drawColor.o != 0f) {
+		if (objectSprite != null && draw && drawColor.o != 0f) {
 			objectSprite.onDrawFrame(
-					gl,
-					now,
-					position.x + baseTranslation.x,
-					position.y + baseTranslation.y,
-					ratio,
-					scale.x,
-					scale.y,
-					rotation,
-					drawColor,
-					direction);
+										now,
+										position.x + baseTranslation.x,
+										position.y + baseTranslation.y,
+										ratio,
+										scale.x,
+										scale.y,
+										rotation,
+										drawColor,
+										direction);
 			if (move_it) {
 				move(now, 0);
 			}
@@ -239,38 +251,51 @@ public class BaseObject implements BaseObjectInterface
 
 	public void setFrameDuration(final int duration)
 	{
-		objectSprite.setFrameDuration(duration);
+		if (objectSprite != null) {
+			objectSprite.setFrameDuration(duration);
+		}
 	}
 
 	public void setFrameRange(final int start, final int end)
 	{
-		objectSprite.setFrameRange(start, end);
+		if (objectSprite != null) {
+			objectSprite.setFrameRange(start, end);
+		}
 	}
 
 	public void manualAnimation(final boolean value)
 	{
-		objectSprite.manualAnimation(value);
+		if (objectSprite != null) {
+			objectSprite.manualAnimation(value);
+		}
 	}
 
 	public void toggleAnimationRun(final boolean now)
 	{
-		objectSprite.toggleAnimationRun(now);
+		if (objectSprite != null) {
+			objectSprite.toggleAnimationRun(now);
+		}
 	}
 
 	public void switchToNextFrame()
 	{
-		objectSprite.switchToNextFrame();
+		if (objectSprite != null) {
+			objectSprite.switchToNextFrame();
+		}
 	}
 
 	public void switchToFrame(final int f)
 	{
-		objectSprite.switchToFrame(f);
+		if (objectSprite != null) {
+			objectSprite.switchToFrame(f);
+		}
 	}
 
-    public void onDestroy() {};
-
-	protected class OpacityCountdownTimer extends CountDownTimer
+	public void onDestroy()
 	{
+	}
+
+	protected class OpacityCountdownTimer extends CountDownTimer {
 		static final long BLEND_DELTA = 500;
 		long startTime;
 		public boolean skipStart = false;

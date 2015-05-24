@@ -1,21 +1,35 @@
 /*
-* Author:
-*   xaero xaero@exil.org
-*
-* Copyright (c) 2014, Puvo Productions http://puvoproductions.com/
-*
-* Permission to use, copy, modify, and distribute this software for any
-* purpose with or without fee is hereby granted, provided that the above
-* copyright notice and this permission notice appear in all copies.
-*
-* THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-* WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-* MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-* ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-* WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-* ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-* OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-*/
+ * Author:
+ *   Thomas Siegmund Thomas.Siegmund@puvoproductions.com
+ *
+ * Copyright (c) 2015, Puvo Productions http://puvoproductions.com
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *    * Redistributions of source code must retain the above copyright notice, this
+ *      list of conditions and the following disclaimer.
+ *    * Redistributions in binary form must reproduce the above copyright notice,
+ *      this list of conditions and the following disclaimer in the documentation
+ *      and/or other materials provided with the distribution.
+ *    * Neither the name of the [ORGANIZATION] nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
+ *      without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 
 package com.puvo.livewallpapers.testwallpaper;
@@ -27,12 +41,8 @@ import android.os.CountDownTimer;
 import com.puvo.livewallpapers.puvowallpaperbase.BaseObject;
 import com.puvo.livewallpapers.puvowallpaperbase.Defines;
 
-import javax.microedition.khronos.opengles.GL10;
-
-class Character extends BaseObject
-{
-	private enum State
-	{
+class Character extends BaseObject {
+	private enum State {
 		IDLE1,
 		IDLE2,
 		TAPPED,
@@ -61,10 +71,13 @@ class Character extends BaseObject
 	private float traveledDistance;
 	private int traveledDistanceInt;
 
-	public Character(GL10 gl, final Context context, final int[] res,
+	private final State[] slide_states = new State[]{State.IDLE2, State.SLIDE2_LEFT, State.SLIDE2_RIGHT};
+	private final State[] default_states = new State[]{State.IDLE1, State.SLIDE1_LEFT, State.SLIDE1_RIGHT};
+
+	public Character(final Context context, final int[] res,
 					 final int left, final int right, final float virtual_scroll_speed_factor)
 	{
-		super(gl, context, res, left, right, virtual_scroll_speed_factor);
+		super(context, res, left, right, virtual_scroll_speed_factor);
 		state = State.TAPPED;
 		tapped_override = false;
 		inclination = true;
@@ -183,11 +196,11 @@ class Character extends BaseObject
 			switch (state) {
 				case SLIDE2_LEFT:
 				case SLIDE2_RIGHT:
-					states = new State[]{State.IDLE2, State.SLIDE2_LEFT, State.SLIDE2_RIGHT};
+					states = slide_states;
 					new_state = handleState(new_dir, old_dir, states);
 					break;
 				default:
-					states = new State[]{State.IDLE1, State.SLIDE1_LEFT, State.SLIDE1_RIGHT};
+					states = default_states;
 					new_state = handleState(new_dir, old_dir, states);
 					break;
 			}
@@ -278,15 +291,16 @@ class Character extends BaseObject
 		}
 	}
 
-	class IdleToSlide2CountdownTimer extends CountDownTimer
-	{
+	class IdleToSlide2CountdownTimer extends CountDownTimer {
 		IdleToSlide2CountdownTimer(long startTime, long interval)
 		{
 			super(startTime, interval);
 		}
 
 		@Override
-		public void onTick(long millisUntilFinished) { }
+		public void onTick(long millisUntilFinished)
+		{
+		}
 
 		@Override
 		public void onFinish()
@@ -304,15 +318,16 @@ class Character extends BaseObject
 		}
 	}
 
-	class Idle1ToIdle2CountdownTimer extends CountDownTimer
-	{
+	class Idle1ToIdle2CountdownTimer extends CountDownTimer {
 		Idle1ToIdle2CountdownTimer(long startTime, long interval)
 		{
 			super(startTime, interval);
 		}
 
 		@Override
-		public void onTick(long millisUntilFinished) { }
+		public void onTick(long millisUntilFinished)
+		{
+		}
 
 		@Override
 		public void onFinish()
@@ -331,15 +346,16 @@ class Character extends BaseObject
 		}
 	}
 
-	class TappedToIdle1CountdownTimer extends CountDownTimer
-	{
+	class TappedToIdle1CountdownTimer extends CountDownTimer {
 		TappedToIdle1CountdownTimer(long startTime, long interval)
 		{
 			super(startTime, interval);
 		}
 
 		@Override
-		public void onTick(long millisUntilFinished) { }
+		public void onTick(long millisUntilFinished)
+		{
+		}
 
 		@Override
 		public void onFinish()

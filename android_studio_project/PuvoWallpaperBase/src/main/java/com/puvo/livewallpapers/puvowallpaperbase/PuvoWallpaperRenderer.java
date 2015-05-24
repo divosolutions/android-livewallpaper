@@ -1,22 +1,33 @@
-/*
-* Author:
-*   xaero xaero@exil.org
-*
-* Copyright (c) 2014, Puvo Productions http://puvoproductions.com/
-*
-* Permission to use, copy, modify, and distribute this software for any
-* purpose with or without fee is hereby granted, provided that the above
-* copyright notice and this permission notice appear in all copies.
-*
-* THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-* WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-* MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-* ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-* WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-* ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-* OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-*/
-
+// Author:
+//   Thomas Siegmund Thomas.Siegmund@puvoproductions.com
+//
+// Copyright (c) 2015, Puvo Productions http://puvoproductions.com
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without modification,
+// are permitted provided that the following conditions are met:
+//
+//    * Redistributions of source code must retain the above copyright notice, this
+//      list of conditions and the following disclaimer.
+//    * Redistributions in binary form must reproduce the above copyright notice,
+//      this list of conditions and the following disclaimer in the documentation
+//      and/or other materials provided with the distribution.
+//    * Neither the name of the [ORGANIZATION] nor the names of its contributors
+//      may be used to endorse or promote products derived from this software
+//      without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+// LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.puvo.livewallpapers.puvowallpaperbase;
 
@@ -24,8 +35,9 @@ import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.PointF;
+import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.opengl.GLU;
+import android.opengl.Matrix;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -36,11 +48,11 @@ import java.util.Hashtable;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRenderer
-{
+public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRenderer {
 	private static final String LOG_TAG = "PuvoWallpaperRenderer";
-	private ArrayList<ArrayList<BaseObjectInterface>> layer = null;
-	protected ArrayList<BaseObjectInterface> inclinationObjects;
+	protected ArrayList<BaseObjectInterface> inclinationObjects = null;
+	private BaseObjectInterface[] inclinationObjects_array = null;
+	private BaseObjectInterface[][] layer_array = null;
 	private PointF currentPositionSF[];
 	private PointF currentParallaxSF[];
 	private PointF currentRenderPosition[];
@@ -115,10 +127,10 @@ public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRend
 		scroll_speed_factor = calcSpeedFactor(2 * height, max_offset * scroll_factor);
 
 		setCurrentPositionSF();
-		for (int l = 0; l < layer.size(); l++) {
+		for (int l = 0; l < layer_array.length; l++) {
 			final float offset = -(virtual_scroll_speed_factor[l][1]) * max_parallax;
-			for (final BaseObjectInterface bo : layer.get(l)) {
-				bo.setNewPositionParallaxOffset(offset);
+			for (int i = 0; i < layer_array[l].length; i++) {
+				layer_array[l][i].setNewPositionParallaxOffset(offset);
 			}
 		}
 		resetParallax();
@@ -138,12 +150,15 @@ public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRend
 		ArrayList<Hashtable<String, ArrayList<Integer>>> tmpVec = new ArrayList<>(number_of_layers);
 		Hashtable<String, ArrayList<Integer>> byName;
 
-		// a hashtable for every layer
+		if (resourceData == null) {
+			Log.e(LOG_TAG, "resourceData is null");
+			return construct;
+		}
+
 		for (int l = 0; l < number_of_layers; l++) {
 			tmpVec.add(l, new Hashtable<String, ArrayList<Integer>>());
 		}
 
-		// add the resources to the sprite number
 		for (int res : resourceData.keySet()) {
 			String number = resourceData.get(res).get("number");
 			byName = tmpVec.get(Integer.parseInt(resourceData.get(res).get("layer")));
@@ -186,22 +201,27 @@ public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRend
 		return construct;
 	}
 
-	public BaseObjectInterface initObject(GL10 gl, Hashtable<String, String> rd, int[] res, int l)
+	public BaseObjectInterface initObject(Hashtable<String, String> rd, int[] res, int l)
 	{
 		return null;
 	}
 
 	/* initializes all necessary values and creates for every layer a list of renderable objects  */
-	private void create(GL10 gl)
+	private void create()
 	{
 		int[][][] layer_construct = createLayerConstruct();
+		String[] scrollSpeedStrings = new String[]{"1.0", "1.1", "1.2", "1.3"}, cd = new String[0];
+		int resID;
 
-		layer = new ArrayList<>(layer_construct.length);
-		inclinationObjects = new ArrayList<>(1);
 		currentPositionSF = new PointF[layer_construct.length];
 		currentParallaxSF = new PointF[layer_construct.length];
 		currentRenderPosition = new PointF[layer_construct.length];
-		String[] scrollSpeedStrings = context.getResources().getStringArray(Defines.getResourceIDbyName("array", "virtual_scroll_speed_factor"));
+		scroll_response = 0.55f;
+
+		resID = Defines.getResourceIDbyName("array", "virtual_scroll_speed_factor");
+		if (resID != -1) {
+			scrollSpeedStrings = context.getResources().getStringArray(resID);
+		}
 		// responsible for the moving speed of a layer in relation to the background (Disney pseudo 3D)
 		virtual_scroll_speed_factor = new float[scrollSpeedStrings.length][2];
 
@@ -211,30 +231,50 @@ public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRend
 		}
 		// is responsible for how fast the background will adapt to the new x_pixels value, because onOffsetsChanged
 		// (in PuvoWallpaperService) isn't called that often
-		scroll_response = Float.parseFloat(context.getResources().getString(Defines.getResourceIDbyName("string", "scroll_response")));
+		resID = Defines.getResourceIDbyName("string", "scroll_response");
+		if (resID != -1) {
+			scroll_response = Float.parseFloat(context.getResources().getString(resID));
+		}
 
-		ArrayList<BaseObjectInterface> a;
 		Hashtable<Integer, BaseObjectInterface> all = new Hashtable<>();
 		BaseObjectInterface bo;
 		Hashtable<String, String> rd;
-		for (int l = 0; l < layer_construct.length; l++) {
-			currentPositionSF[l] = new PointF(0, 0);
-			currentParallaxSF[l] = new PointF(0, 0);
-			currentRenderPosition[l] = new PointF(0, 0);
-			a = new ArrayList<>();
-			for (int r = 0; r < layer_construct[l].length; r++) {
-				rd = Defines.getResourceData().get(layer_construct[l][r][0]);
+		Hashtable<Integer, Hashtable<String, String>> resourceData = Defines.getResourceData();
 
-				bo = initObject(gl, rd, layer_construct[l][r], l);
-				if (bo != null) {
-					a.add(bo);
-					all.put(Integer.parseInt(rd.get("id")), bo);
+		if (resourceData == null) {
+			Log.e(LOG_TAG, "resourceData is null");
+		} else {
+			inclinationObjects = new ArrayList<>();
+			layer_array = new BaseObjectInterface[layer_construct.length][];
+			for (int l = 0; l < layer_construct.length; l++) {
+				currentPositionSF[l] = new PointF(0, 0);
+				currentParallaxSF[l] = new PointF(0, 0);
+				currentRenderPosition[l] = new PointF(0, 0);
+				layer_array[l] = new BaseObjectInterface[layer_construct[l].length];
+				for (int r = 0; r < layer_construct[l].length; r++) {
+					rd = resourceData.get(layer_construct[l][r][0]);
+
+					bo = initObject(rd, layer_construct[l][r], l);
+					layer_array[l][r] = bo;
+					if (bo != null) {
+						all.put(Integer.parseInt(rd.get("id")), bo);
+					} else {
+						Log.e(LOG_TAG, "bo must not be null");
+						throw new RuntimeException("unable to initialize resource " + rd.get("fullName"));
+					}
 				}
 			}
-			layer.add(l, a);
+			inclinationObjects_array = new BaseObjectInterface[inclinationObjects.size()];
+			for (int i = 0; i < inclinationObjects.size(); i++) {
+				inclinationObjects_array[i] = inclinationObjects.get(i);
+			}
 		}
 
-		String[] cd = context.getResources().getStringArray(Defines.getResourceIDbyName("array", "connections"));
+
+		resID = Defines.getResourceIDbyName("array", "connections");
+		if (resID != -1) {
+			cd = context.getResources().getStringArray(resID);
+		}
 
 		for (int i = 0; i < cd.length; i++) {
 			if (cd[i].equals("none")) {
@@ -254,28 +294,31 @@ public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRend
 		current_offset_x_position = x_pixels - 1;
 		onSharedPreferenceChanged(PreferenceManager.getDefaultSharedPreferences(context), null);
 
-		final String key = context.getResources().getString(Defines.getResourceIDbyName("string", "extra_prefs_file"));
-		SharedPreferences sp = context.getSharedPreferences(key, Context.MODE_PRIVATE);
-		onSharedPreferenceChanged(sp, key);
+		String tmp = "extra_prefs";
+		resID = Defines.getResourceIDbyName("string", "extra_prefs_file");
+		if (resID != -1) {
+			tmp = context.getResources().getString(resID);
+		}
+		SharedPreferences sp = context.getSharedPreferences(tmp, Context.MODE_PRIVATE);
+		onSharedPreferenceChanged(sp, tmp);
 
 		create_done = true;
 	}
 
 	public void triggerAction(final int x, final int y)
 	{
-		if (layer == null) {
+		if (layer_array == null) {
 			return;
 		}
 		final float x_ratio = x / current_ratio;
 		final float y_ratio = y / current_ratio;
 
-		for (int i = layer.size() - 1; i >= 0; i--) {
+		for (int i = layer_array.length - 1; i >= 0; i--) {
 			final float _x = x_ratio - currentRenderPosition[i].x;
 			final float _y = y_ratio - currentRenderPosition[i].y;
-			final ArrayList<BaseObjectInterface> al = layer.get(i);
 
-			for (int j = al.size() - 1; j >= 0; j--) {
-				final BaseObjectInterface bo = al.get(j);
+			for (int j = layer_array[i].length - 1; j >= 0; j--) {
+				final BaseObjectInterface bo = layer_array[i][j];
 				if (bo.touched(_x, _y)) {
 					if (bo.triggerAction()) {
 						return;
@@ -339,12 +382,12 @@ public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRend
 
 	public void setInclination(final float value)
 	{
-		if (inclinationObjects == null) {
+		if (inclinationObjects_array == null) {
 			return;
 		}
 
-		for (BaseObjectInterface inclinationObject : inclinationObjects) {
-			inclinationObject.setDirection(value);
+		for (int i = 0; i < inclinationObjects_array.length; i++) {
+			inclinationObjects_array[i].setDirection(value);
 		}
 	}
 
@@ -352,32 +395,28 @@ public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRend
 	{
 		pixelToInchesFactor = value;
 
-		if (layer == null) {
+		if (layer_array == null) {
 			return;
 		}
 
 		value *= current_ratio;
 
-		for (int i = layer.size() - 1; i >= 0; i--) {
-			final ArrayList<BaseObjectInterface> al = layer.get(i);
-
-			for (int j = al.size() - 1; j >= 0; j--) {
-				al.get(j).setMetrics(value);
+		for (int i = layer_array.length - 1; i >= 0; i--) {
+			for (int j = layer_array[i].length - 1; j >= 0; j--) {
+				layer_array[i][j].setMetrics(value);
 			}
 		}
 	}
 
 	public void savePreferences(SharedPreferences sharedPreferences)
 	{
-		if (layer == null) {
+		if (layer_array == null) {
 			return;
 		}
 
-		for (int i = layer.size() - 1; i >= 0; i--) {
-			final ArrayList<BaseObjectInterface> al = layer.get(i);
-
-			for (int j = al.size() - 1; j >= 0; j--) {
-				al.get(j).savePreferences(sharedPreferences);
+		for (int i = layer_array.length - 1; i >= 0; i--) {
+			for (int j = layer_array[i].length - 1; j >= 0; j--) {
+				layer_array[i][j].savePreferences(sharedPreferences);
 			}
 		}
 	}
@@ -387,37 +426,38 @@ public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRend
 		visible = value;
 	}
 
-	@Override
-	public void onSurfaceCreated(GL10 gl, EGLConfig config)
+	public void onDestroy()
 	{
-		gl.glEnable(GL10.GL_TEXTURE_2D);                // enable texture mapping
-		gl.glClearColor(0.416f, 0.624f, 0.702f, 1.0f);  // background color of the wallpaper. This will save us one big background texture
-		//gl.glClearDepthf(1.0f);                         // depth buffer setup
-		//gl.glEnable(GL10.GL_DEPTH_TEST);                // enables depth testing
-		//gl.glDepthFunc(GL10.GL_LEQUAL);                 // the type of depth testing to do
-		gl.glEnable(GL10.GL_BLEND);                     // alpha blending
-		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
-		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-		gl.glFrontFace(GL10.GL_CCW);                    // Set the face rotation
-
-		create(gl);
+		for (int i = layer_array.length - 1; i >= 0; i--) {
+			for (int j = layer_array[i].length - 1; j >= 0; j--) {
+				layer_array[i][j].onDestroy();
+			}
+		}
 	}
 
-    public void onDestroy()
-    {
-        for (int i = layer.size() - 1; i >= 0; i--) {
-            final ArrayList<BaseObjectInterface> al = layer.get(i);
+	@Override
+	public void onSurfaceCreated(GL10 gl_unused, EGLConfig config)
+	{
+		GLES20.glEnable(GLES20.GL_TEXTURE_2D);                // enable texture mapping
+		GLES20.glClearColor(0.416f, 0.624f, 0.702f, 1.0f);
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		GLES20.glFrontFace(GLES20.GL_CCW);                    // Set the face rotation
 
-            for (int j = al.size() - 1; j >= 0; j--) {
-                final BaseObjectInterface bo = al.get(j);
-                bo.onDestroy();
-            }
-        }
-    }
+		PuvoGLES20Tools.create_program();
+
+		if (PuvoGLES20Tools.program_handle != 0) {
+			GLES20.glUseProgram(PuvoGLES20Tools.program_handle);
+		}
+
+		// Set the camera position (View matrix)
+		Matrix.setLookAtM(PuvoGLES20Tools.mView, 0, 0f, 0f, 1f, 0f, 0f, -1f, 0f, 1.0f, 0.0f);
+
+		create();
+	}
 
 	@Override
-	public void onSurfaceChanged(GL10 gl, int width, int height)
+	public void onSurfaceChanged(GL10 gl_unused, int width, int height)
 	{
 		if (height == 0) {
 			height = 1;
@@ -426,12 +466,13 @@ public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRend
 		handleRatioChange(width, height);
 
 		// adapt the OpenGL context
-		gl.glViewport(0, 0, width, height);
-		gl.glMatrixMode(GL10.GL_PROJECTION);
-		gl.glLoadIdentity();
-		GLU.gluOrtho2D(gl, 0, width, height, 0);
-		gl.glMatrixMode(GL10.GL_MODELVIEW);
-		gl.glLoadIdentity();
+		GLES20.glViewport(0, 0, width, height);
+
+		// Setup our screen width and height for normal sprite translation.
+		Matrix.orthoM(PuvoGLES20Tools.mProjection, 0, 0, width, height, 0, -1f, 1f);
+
+		// Calculate the projection and view transformation
+		Matrix.multiplyMM(PuvoGLES20Tools.mProjectionAndView, 0, PuvoGLES20Tools.mProjection, 0, PuvoGLES20Tools.mView, 0);
 	}
 
 	@Override
@@ -450,9 +491,9 @@ public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRend
 				final int minutes = Calendar.getInstance().get(Calendar.MINUTE);
 				final int seconds = Calendar.getInstance().get(Calendar.SECOND);
 
-				for (final ArrayList<BaseObjectInterface> aLayer : layer) {
-					for (final BaseObjectInterface bo : aLayer) {
-						bo.setTime(now, hour, minutes, seconds);
+				for (int i = 0; i < layer_array.length; i++) {
+					for (int j = 0; j < layer_array[i].length; j++) {
+						layer_array[i][j].setTime(now, hour, minutes, seconds);
 					}
 				}
 			}
@@ -478,25 +519,37 @@ public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRend
 			}
 
 			// clear everything
-			gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-			gl.glLoadIdentity();
+			GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+			GLES20.glUseProgram(PuvoGLES20Tools.program_handle);
+
+			// Enable generic vertex attribute array
+			GLES20.glEnableVertexAttribArray(PuvoGLES20Tools.texture_coordinates_handle);
+			// Enable generic vertex attribute array
+			GLES20.glEnableVertexAttribArray(PuvoGLES20Tools.position_handle);
+
 			int layer_index = 0;
 
 			// draw the objects
-			for (final ArrayList<BaseObjectInterface> aLayer : layer) {
-				PointF p = currentRenderPosition[layer_index];
-				for (final BaseObjectInterface bo : aLayer) {
-					bo.onDrawFrame(gl, now, p, current_ratio, defaultScale);
+			for (int i = 0; i < layer_array.length; i++) {
+				PointF p = currentRenderPosition[i];
+
+				for (int j = 0; j < layer_array[i].length; j++) {
+					layer_array[i][j].onDrawFrame(now, p, current_ratio, defaultScale);
 				}
-				layer_index++;
 			}
+
+			// Disable vertex array
+			GLES20.glDisableVertexAttribArray(PuvoGLES20Tools.position_handle);
+			GLES20.glDisableVertexAttribArray(PuvoGLES20Tools.texture_coordinates_handle);
+
 			// sleep for a while to get approximately 30 fps
 			now = System.currentTimeMillis() - now;
 			if (now < 33) {
 				// for 30 fps we have to wait 33.33 ms
 				try {
 					Thread.sleep(33 - now);
-				} catch (InterruptedException ignored) {}
+				} catch (InterruptedException ignored) {
+				}
 			}
 		} else {
 			frameCounter = 300;
@@ -511,14 +564,14 @@ public class PuvoWallpaperRenderer implements GLSurfaceView.Renderer, PuvoGLRend
 		apply_preferences = true;
 		number_of_screens = PuvoPreferences.getIntPreferenceByName(sharedPreferences, "number_of_screens", 5, 1, 20) - 1;
 
-		if (layer == null) {
+		if (layer_array == null) {
 			apply_preferences = false;
 			return;
 		}
 
-		for (final ArrayList<BaseObjectInterface> aLayer : layer) {
-			for (final BaseObjectInterface bo : aLayer) {
-				bo.setPreferences(sharedPreferences, key);
+		for (int i = 0; i < layer_array.length; i++) {
+			for (int j = 0; j < layer_array[i].length; j++) {
+				layer_array[i][j].setPreferences(sharedPreferences, key);
 			}
 		}
 		apply_preferences = false;

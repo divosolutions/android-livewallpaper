@@ -1,22 +1,33 @@
-/*
-* Author:
-*   xaero xaero@exil.org
-*
-* Copyright (c) 2014, Puvo Productions http://puvoproductions.com/
-*
-* Permission to use, copy, modify, and distribute this software for any
-* purpose with or without fee is hereby granted, provided that the above
-* copyright notice and this permission notice appear in all copies.
-*
-* THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-* WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-* MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-* ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-* WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-* ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-* OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-*/
-
+// Author:
+//   xaero puvo-productions@freenet.de
+//
+// Copyright (c) 2014, Puvo Productions http://puvoproductions.com/
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without modification,
+// are permitted provided that the following conditions are met:
+//
+//    * Redistributions of source code must retain the above copyright notice, this
+//      list of conditions and the following disclaimer.
+//    * Redistributions in binary form must reproduce the above copyright notice,
+//      this list of conditions and the following disclaimer in the documentation
+//      and/or other materials provided with the distribution.
+//    * Neither the name of the [ORGANIZATION] nor the names of its contributors
+//      may be used to endorse or promote products derived from this software
+//      without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+// LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.puvo.livewallpapers.puvowallpaperbase;
 
@@ -28,14 +39,12 @@ import android.graphics.Rect;
 
 import java.util.ArrayList;
 
-import javax.microedition.khronos.opengles.GL10;
-
 @SuppressWarnings("ConstantConditions")
 public class Particle extends BaseObject
 {
 	private static final String LOG_TAG = "Particle";
 
-	protected static enum MOVE_DIRECTION
+	protected enum MOVE_DIRECTION
 	{
 		X, Y
 	}
@@ -50,7 +59,7 @@ public class Particle extends BaseObject
 	protected float particle_factor, particle_size_factor;
 
 	protected int width, height;
-	protected Rect area;
+	protected final Rect area;
 	protected float particle_speed;
 	protected PointF[] particle_positions, particle_speeds, particle_sizes;
 	protected int[] particle_frames;
@@ -59,9 +68,9 @@ public class Particle extends BaseObject
 
 	private int spawn_length, spawn_offset;
 
-	public Particle(GL10 gl, Context context, int[] res, int left, int right, float virtual_scroll_speed_factor)
+	public Particle(Context context, int[] res, int left, int right, float virtual_scroll_speed_factor)
 	{
-		super(gl, context, res, left, right, virtual_scroll_speed_factor);
+		super(context, res, left, right, virtual_scroll_speed_factor);
 
 		area = new Rect();
 
@@ -252,16 +261,14 @@ public class Particle extends BaseObject
 	}
 
 	@Override
-	public void onDrawFrame(GL10 gl, final long now, PointF baseTranslation, final float ratio, final PointF scale)
+	public void onDrawFrame(final long now, PointF baseTranslation, final float ratio, final PointF scale)
 	{
 		if (draw && !config_in_progress && drawColor.o != 0f) {
 			rendering = true;
-			final Object[] index = particle_indices.toArray();
-			for (Object anIndex : index) {
-				final int i = (Integer) anIndex;
+			for (int index = 0; index < particle_indices.size(); index++) {
+				final int i = particle_indices.get(index);
 				objectSprite.switchToFrameUnchecked(particle_frames[i]);
 				objectSprite.onDrawFrame(
-						gl,
 						now,
 						particle_positions[i].x + baseTranslation.x,
 						particle_positions[i].y + baseTranslation.y,

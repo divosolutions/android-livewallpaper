@@ -1,5 +1,5 @@
 // Author:
-//   xaero xaero@exil.org
+//   xaero puvo-productions@freenet.de
 //
 // Copyright (c) 2014, Puvo Productions http://puvoproductions.com/
 //
@@ -39,8 +39,6 @@ import android.view.WindowManager;
 
 import java.util.ArrayList;
 
-import javax.microedition.khronos.opengles.GL10;
-
 public class Balloon extends Particle
 {
 	private static final String LOG_TAG = "Balloon";
@@ -49,9 +47,9 @@ public class Balloon extends Particle
 	private ArrayList<Integer> toRemove;
 	private int old_value, last_index;
 
-	public Balloon(GL10 gl, Context context, int[] res, int left_border, int right_border, float virtual_scroll_speed_factor)
+	public Balloon(Context context, int[] res, int left_border, int right_border, float virtual_scroll_speed_factor)
 	{
-		super(gl, context, res, left_border, right_border, virtual_scroll_speed_factor);
+		super(context, res, left_border, right_border, virtual_scroll_speed_factor);
 
 		last_index = 0;
 		old_value = -1;
@@ -163,11 +161,11 @@ public class Balloon extends Particle
 	}
 
 	@Override
-	public void onDrawFrame(GL10 gl, final long now, PointF baseTranslation, final float ratio, final PointF scale)
+	public void onDrawFrame(final long now, PointF baseTranslation, final float ratio, final PointF scale)
 	{
 		toRemove.clear();
 
-		super.onDrawFrame(gl, now, zeroPoint, ratio, scale);
+		super.onDrawFrame(now, zeroPoint, ratio, scale);
 
 		if (toRemove.size() != 0) {
 			particle_indices.removeAll(toRemove);
