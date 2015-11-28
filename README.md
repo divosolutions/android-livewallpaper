@@ -24,7 +24,7 @@ As long as a sprite is not marked as special, it will create a
 at the specified position/layer/order. Otherwise a special object (e.g. Particle) derived from BaseObject will be
 created.
 
-### layers and there parallax
+### layers and their parallax
 IIf you have more than one layer, you might want to have a parallax (pseudo 3D) effect like the layers in the back move
 slower the the one on thr front. You can specify that in the customValues.xml file in the *virtual_scroll_speed_factor*
 string array. The index of an entries is the layer's number and the value is a factor. A value of 1.5 means that if the 
